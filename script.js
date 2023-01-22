@@ -2,7 +2,6 @@ const currentDisplay = document.getElementById('input');
 const history = document.getElementById('history');
 const buttons = document.querySelectorAll('.button');
 
-console.log(currentDisplay.innerHTML);
 let currentInput = currentDisplay.innerHTML;
 let tempInput = 0;
 let currentOperation = null;
@@ -12,7 +11,6 @@ let isPercentage = false;
 
 buttons.forEach((button) => {
     button.addEventListener('click', function(e) {
-        console.log(e.target.value);
         switch(e.target.value) {
             case '1': inputNumber(e.target.value); break;
             case '2': inputNumber(e.target.value); break;
@@ -60,7 +58,6 @@ function inputNumber(number) {
 }
 
 function decimal() {
-    console.log(currentDisplay.innerHTML.includes('.'));
     if(currentDisplay.innerHTML.includes('.')) {
         return;
     } else if(currentDisplay.innerHTML.length >= 10) {
@@ -102,7 +99,6 @@ function percentage() {
 }
 
 function operand() {
-    console.log(`operand, currentoperation = ${currentOperation}`);
     if(!tempInput) {
         history.innerHTML = String(display(currentInput)) + String(currentOperation);
         tempOperation = currentOperation;
@@ -121,7 +117,6 @@ function operand() {
 }
 
 function evaluate() {
-    console.log(currentOperation);
     if (!currentOperation) {
         return;
     } else {
