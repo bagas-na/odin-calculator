@@ -5,6 +5,7 @@ const buttons = document.querySelectorAll('.button');
 console.log(currentDisplay.innerHTML);
 let currentInput = currentDisplay.innerHTML;
 let tempInput = 0;
+let currentOperation = null;
 
 let isPercentage = false;
 
@@ -26,45 +27,41 @@ buttons.forEach((button) => {
             case 'clr': clear(); break;
             case 'sqrt': squareRoot(); break;
             case '%': percentage(); break;
-            case '/': break;
-            case '*': break;
-            case '-': break;
-            case '+': break;
-            case'equal': break;
+            case '÷': currentOperation = '÷'; operand(); break;
+            case '*': currentOperation = '×'; operand(); break;
+            case '-': currentOperation = '-'; operand(); break;
+            case '+': currentOperation = '÷'; operand(); break;
+            case'equal': evaluate(); break;
         }
-        display()
+        currentDisplay.innerHTML = display(currentInput)
     })
 })
 
-function display() {
-    if (String(currentInput).length >= 10) {
-        currentInput = +currentInput;
-        currentDisplay.innerHTML = currentInput.toPrecision(9);
-    } else if (+currentInput > 9999999990 || +currentInput < -999999999) {
-        currentDisplay.innerHTML = 'Out of Range';
-    } else {
-        currentDisplay.innerHTML = currentInput;
+function operand() {
+    if(!tempInput) {
+        history.innerHTML = String(display(currentInput)) + String(currentOperation);
+        tempInput = currentInput;
+        currentInput = '';
+    } else if(!currentInput) {
+        history.innerHTML = String(display(tempInput)) + String(currentOperation);
     }
+}
 
-    if (isPercentage) {
-        if (String(currentInput).length >= 8) {
-            currentInput = +currentInput;
-            currentDisplay.innerHTML = Number(100*currentInput).toPrecision(8);
-            currentDisplay.innerHTML = String(currentDisplay.innerHTML) + '%';
-        } else if (+currentInput > 9999999990 || +currentInput < -999999999) {
-            currentDisplay.innerHTML = 'Out of Range';
-        } else {
-            currentDisplay.innerHTML = 100*currentInput;
-            currentDisplay.innerHTML = String(currentDisplay.innerHTML) + '%';
-        }
+function display(currentInput) {
+    if(isPercentage) {
+        return String(100*currentInput).substring(0, 8) + '%';
+    } else {
+        return String(currentInput).substring(0, 9)
     }
 }
 
 function inputNumber(number) {
     if(number == 0 && !currentDisplay.innerHTML) {
         return;
-    } else if(currentDisplay.innerHTML.length >= 10) {
+    } else if(currentDisplay.innerHTML.length >= 9) {
         return;
+    } else if(isPercentage) {
+        currentInput = 0.01 * (String(100*currentInput) + String(number));
     } else {
         currentInput = String(currentInput) + String(number);
     }
@@ -82,8 +79,11 @@ function decimal() {
 }
 
 function backSpace() {
-    currentInput = String(currentInput);
-    currentInput = currentInput.slice(0, -1);
+    if(isPercentage) {
+        currentInput = 0.01 * String(100*currentInput).slice(0, -1);
+    } else {
+        currentInput = String(currentInput).slice(0, -1);
+    }
 }
 
 function clear() {
@@ -104,5 +104,39 @@ function percentage() {
         isPercentage = true;
     } else {
         isPercentage = false;
+    }
+}
+
+function add(a, b) {
+    return a + b
+  }
+  
+function substract(a, b) {
+    return a - b
+    }
+
+function multiply(a, b) {
+    return a * b
+}
+
+function divide(a, b) {
+    return a / b
+}
+
+function operate(operator, a, b) {
+    a = Number(a)
+    b = Number(b)
+    switch (operator) {
+        case '+':
+        return add(a, b)
+        case '−':
+        return substract(a, b)
+        case '×':
+        return multiply(a, b)
+        case '÷':
+        if (b === 0) return null
+        else return divide(a, b)
+        default:
+        return null
     }
 }
