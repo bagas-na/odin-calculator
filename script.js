@@ -4,6 +4,9 @@ const buttons = document.querySelectorAll('.button');
 
 console.log(currentDisplay.innerHTML);
 let currentInput = currentDisplay.innerHTML;
+let tempInput = 0;
+
+let isPercentage = false;
 
 buttons.forEach((button) => {
     button.addEventListener('click', function(e) {
@@ -23,6 +26,11 @@ buttons.forEach((button) => {
             case 'clr': clear(); break;
             case 'sqrt': squareRoot(); break;
             case '%': percentage(); break;
+            case '/': break;
+            case '*': break;
+            case '-': break;
+            case '+': break;
+            case'equal': break;
         }
         display()
     })
@@ -32,10 +40,23 @@ function display() {
     if (String(currentInput).length >= 10) {
         currentInput = +currentInput;
         currentDisplay.innerHTML = currentInput.toPrecision(9);
-    } else if (+currentInput > 9999999990) {
+    } else if (+currentInput > 9999999990 || +currentInput < -999999999) {
         currentDisplay.innerHTML = 'Out of Range';
     } else {
         currentDisplay.innerHTML = currentInput;
+    }
+
+    if (isPercentage) {
+        if (String(currentInput).length >= 8) {
+            currentInput = +currentInput;
+            currentDisplay.innerHTML = Number(100*currentInput).toPrecision(8);
+            currentDisplay.innerHTML = String(currentDisplay.innerHTML) + '%';
+        } else if (+currentInput > 9999999990 || +currentInput < -999999999) {
+            currentDisplay.innerHTML = 'Out of Range';
+        } else {
+            currentDisplay.innerHTML = 100*currentInput;
+            currentDisplay.innerHTML = String(currentDisplay.innerHTML) + '%';
+        }
     }
 }
 
@@ -79,5 +100,9 @@ function squareRoot() {
 }
 
 function percentage() {
-    
+    if (!isPercentage) {
+        isPercentage = true;
+    } else {
+        isPercentage = false;
+    }
 }
