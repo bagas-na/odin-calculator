@@ -6,11 +6,13 @@ console.log(currentDisplay.innerHTML);
 let currentInput = currentDisplay.innerHTML;
 let tempInput = 0;
 let currentOperation = null;
+let tempOperation = null;
 
 let isPercentage = false;
 
 buttons.forEach((button) => {
     button.addEventListener('click', function(e) {
+        console.log(e.target.value);
         switch(e.target.value) {
             case '1': inputNumber(e.target.value); break;
             case '2': inputNumber(e.target.value); break;
@@ -28,24 +30,14 @@ buttons.forEach((button) => {
             case 'sqrt': squareRoot(); break;
             case '%': percentage(); break;
             case '÷': currentOperation = '÷'; operand(); break;
-            case '*': currentOperation = '×'; operand(); break;
+            case '×': currentOperation = '×'; operand(); break;
             case '-': currentOperation = '-'; operand(); break;
-            case '+': currentOperation = '÷'; operand(); break;
-            case'equal': evaluate(); break;
+            case '+': currentOperation = '+'; operand(); break;
+            case'=': evaluate(); break;
         }
         currentDisplay.innerHTML = display(currentInput)
     })
 })
-
-function operand() {
-    if(!tempInput) {
-        history.innerHTML = String(display(currentInput)) + String(currentOperation);
-        tempInput = currentInput;
-        currentInput = '';
-    } else if(!currentInput) {
-        history.innerHTML = String(display(tempInput)) + String(currentOperation);
-    }
-}
 
 function display(currentInput) {
     if(isPercentage) {
@@ -89,6 +81,7 @@ function backSpace() {
 function clear() {
     if(!currentInput) {
         history.innerHTML = '';
+        tempInput = 0;
     }
     currentInput = '';
 }
@@ -97,6 +90,7 @@ function squareRoot() {
     const sqrt = Math.sqrt(+currentInput);
     history.innerHTML = `sqrt(${currentDisplay.innerHTML})`;
     currentInput = sqrt;
+    tempInput = currentInput;
 }
 
 function percentage() {
@@ -104,6 +98,51 @@ function percentage() {
         isPercentage = true;
     } else {
         isPercentage = false;
+    }
+}
+
+function operand() {
+    console.log(`operand, currentoperation = ${currentOperation}`);
+    if(!tempInput) {
+        history.innerHTML = String(display(currentInput)) + String(currentOperation);
+        tempOperation = currentOperation;
+        tempInput = currentInput;
+        currentInput = '';
+    } else if(!currentInput || !tempOperation) {
+        history.innerHTML = String(display(tempInput)) + String(currentOperation);
+        tempOperation = currentOperation;
+        currentInput = '';
+    } else {
+        tempInput = operate(tempOperation, tempInput, currentInput);
+        currentInput = '';
+        history.innerHTML = String(display(tempInput)) + String(currentOperation);
+        tempOperation = currentOperation;
+    }  
+}
+
+function evaluate() {
+    console.log(currentOperation);
+    if (!currentOperation) {
+        return;
+    } else {
+        history.innerHTML = String(display(tempInput)) + String(currentOperation) + String(display(currentInput)) + '=';
+        currentInput = operate(tempOperation, tempInput, currentInput);
+        tempInput = currentInput;
+        currentOperation = null;
+        tempOperation = null;
+    }
+}
+
+function operate(operator, a, b) {
+    a = Number(a)
+    b = Number(b)
+    switch (operator) {
+        case '+': return add(a, b);
+        case '-': return substract(a, b);
+        case '×': return multiply(a, b);
+        case '÷': if (b === 0) return null
+                  else return divide(a, b);
+        default: return null;
     }
 }
 
@@ -121,22 +160,4 @@ function multiply(a, b) {
 
 function divide(a, b) {
     return a / b
-}
-
-function operate(operator, a, b) {
-    a = Number(a)
-    b = Number(b)
-    switch (operator) {
-        case '+':
-        return add(a, b)
-        case '−':
-        return substract(a, b)
-        case '×':
-        return multiply(a, b)
-        case '÷':
-        if (b === 0) return null
-        else return divide(a, b)
-        default:
-        return null
-    }
 }
